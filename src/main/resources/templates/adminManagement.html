@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+            crossorigin="anonymous"
+    />
+    <title>Items List</title>
+</head>
+<body>
+<div class="d-flex flex-row mb-3">
+    <div
+            class="card ms-3 me-3"
+            th:each="item: ${items}"
+            style="width: 18rem"
+    >
+        <div class="card-body">
+            <h5 class="card-title" th:text="${item.name}" />
+            <h6
+                    class="card-subtitle mb-2 text-muted"
+                    th:text="|Brand: ${item.branding.title}|"
+            />
+            <h6
+                    class="card-subtitle mb-2 text-muted"
+                    th:text="|Year: ${item.yearOfCreation}|"
+            />
+            <h6
+                    class="card-subtitle mb-2 text-muted"
+                    th:text="|Price:  ${item.price}|"
+            />
+            <form th:action="@{/adminManagement/deleteItem}" method="post" class="mt-2">
+                <input type="hidden" name="itemId" th:value="${item.id}" />
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Display distribution centres -->
+<h2>Latitude and Longitude of Warehouse is 10</h2>
+<div class="mt-5">
+    <h2>Distribution Centres</h2>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <!-- Add more columns as needed -->
+            <th>Items</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Iterate over distribution centres -->
+        <tr th:each="centre : ${centres}">
+            <td th:text="${centre.id}"></td>
+            <td th:text="${centre.name}"></td>
+            <td th:text="${centre.latitude}"></td>
+            <td th:text="${centre.longitude}"></td>
+            <!-- Add more columns as needed -->
+
+            <!-- Display items for the current distribution centre -->
+            <td>
+                <div class="d-flex flex-row flex-wrap">
+                    <div th:each="item : ${centre.items}" class="card ms-3 me-3" style="width: 18rem">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${item.name}" />
+                            <h6 class="card-subtitle mb-2 text-muted" th:text="|Brand: ${item.branding.title}|"/>
+                            <h6 class="card-subtitle mb-2 text-muted" th:text="|Year: ${item.yearOfCreation}|"/>
+                            <h6 class="card-subtitle mb-2 text-muted" th:text="|Price: ${item.price}|"/>
+                            <h6 class="card-subtitle mb-2 text-muted" th:text="|Quantity: ${item.quantity}|"/>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!-- adminManagement.html -->
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form class="mt-4" action="/adminManagement/processRequest" method="post" th:object="${requestForm}">
+                <div class="form-row">
+                    <div class="col-md-6 mb-3">
+                        <label for="name">Item Name</label>
+                        <input type="text" class="form-control" id="name" name="name" th:field="*{name}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" th:field="*{quantity}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="brand">Item Brand</label>
+                        <select class="custom-select" id="brand" name="brand" th:field="*{brand}" required>
+                            <option value="Balenciaga">Balenciaga</option>
+                            <option value="Stone_Island">Stone Island</option>
+                            <option value="Dior">Dior</option>
+                            <option value="Gucci">Gucci</option>
+                            <!-- Add other brand options as needed -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Add other form fields with appropriate styling -->
+
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div
+        class="d-flex flex-column bd-highlight justify-content-center align-items-center w-75 ms-5"
+>
+    <ul class="pagination mt-5">
+        <li class="page-item">
+            <a class="page-link" th:href="@{/adminManagement/switchPage(pageToSwitch=${currentPage - 1})}">Previous</a>
+        </li>
+        <li
+                class="page-item"
+                th:classappend="${currentPage + 1 eq page} ? 'active' : 'not'"
+                th:each="page: ${#numbers.sequence(1, totalPages)}"
+        >
+            <a class="page-link" th:text="${page}" th:href="@{/adminManagement/switchPage(pageToSwitch=${page - 1})}" />
+        </li>
+        <li class="page-item"><a class="page-link" th:href="@{/adminManagement/switchPage(pageToSwitch=${currentPage + 1})}">Next</a></li>
+    </ul>
+    </nav>
+</div>
+</body>
+</html>
